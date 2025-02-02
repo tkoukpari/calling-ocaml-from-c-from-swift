@@ -1,0 +1,15 @@
+(executables
+ (names mod)
+ (modes object))
+
+(rule
+ (targets modwrap.o)
+ (deps modwrap.c)
+ (action
+  (run ocamlopt %{deps})))
+
+(rule
+ (targets main.exe)
+ (deps main.c mod.exe.o modwrap.o)
+ (action
+  (run %{cc} -o %{targets} -I %{ocaml_where} %{deps} -lm)))
