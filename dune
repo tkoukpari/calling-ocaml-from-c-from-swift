@@ -11,7 +11,7 @@
  (action
   (run ar rcs %{targets} %{deps})))
 
-;; compile c into an object filea - ocaml_where so c can access ocaml headers
+;; compile c into an object file - ocaml_where so c can access ocaml headers
 
 (rule
  (targets main.o)
