@@ -2,14 +2,38 @@
  (names mod)
  (modes object))
 
-(rule
- (targets modwrap.o)
- (deps modwrap.c)
- (action
-  (run ocamlopt %{deps})))
+;; take the ocaml object file and create a static library that can be linked
+;; with c/swift
 
 (rule
- (targets main.exe)
- (deps main.c mod.exe.o modwrap.o)
+ (targets libocaml.a)
+ (deps mod.exe.o)
  (action
-  (run %{cc} -o %{targets} -I %{ocaml_where} %{deps} -lm)))
+  (run ar rcs %{targets} %{deps})))
+
+;; compile c into an object filea - ocaml_where so c can access ocaml headers
+
+(rule
+ (targets main.o)
+ (deps main.c)
+ (action
+  (run clang -c -I %{ocaml_where} main.c -o main.o)))
+
+;; use swiftc to compile main.swift into an executable. link c object file
+
+(rule
+ (targets main)
+ (deps main.swift main.o)
+ (action
+  (run
+   swiftc
+   main.swift
+   main.o
+   -o
+   main
+   -L
+   %{ocaml_where}
+   -L
+   .
+   -locaml
+   -lcamlrun)))

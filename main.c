@@ -1,19 +1,19 @@
-/* File main.c -- a sample client for the OCaml functions */
-
 #include <stdio.h>
+#include <stdint.h>
 #include <caml/callback.h>
 
-extern int fib(int n);
-extern char * format_result(int n);
+static const value * fib_closure = NULL;
 
-int main(int argc, char ** argv)
-{
-  int result;
+// global initializer - runs when the program starts
+static void init_ocaml(void) __attribute__((constructor));
+static void init_ocaml(void) {
+    char *argv[] = {"main", NULL};
+    // start the ocaml runtime
+    caml_startup(argv);
+    fib_closure = caml_named_value("fib");
+}
 
-  /* Initialize OCaml code */
-  caml_startup(argv);
-  /* Do some computation */
-  result = fib(10);
-  printf("fib(10) = %s\n", format_result(result));
-  return 0;
+int fib(int n) {
+    printf("c invoked by swift\n");
+    return Int_val(caml_callback(*fib_closure, Val_int(n)));
 }
