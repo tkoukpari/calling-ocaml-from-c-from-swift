@@ -1,6 +1,6 @@
-let fib n =
-  let rec acc n = if n < 2 then 1 else acc (n - 1) + acc (n - 2) in
+let fib =
+  let rec f n = if n < 2 then 1 else f (n - 1) + f (n - 2) in
   print_endline "ocaml invoked by c";
-  acc n
+  f
 
 let _ = Callback.register "fib" fib
